@@ -1,0 +1,27 @@
+{
+  "name": "eagle",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app/boot.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^0.4.35",
+    "cors": "^2.2.0",
+    "express": "^3.5.1",
+    "lodash": "^2.4.1",
+    "mongo-promise": "0.0.45",
+    "rsvp": "^3.0.6",
+    "yaml": "^0.2.3"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "expect.js": "^0.3.1",
+    "request": "^2.34.0",
+    "sinon": "^1.9.0",
+    "supertest": "^0.10.0"
+  }
+}

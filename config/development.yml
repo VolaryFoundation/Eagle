@@ -1,0 +1,2 @@
+servers:
+  mongodb: 'mongodb://localhost:27017/eagle-redux'
