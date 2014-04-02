@@ -1,11 +1,11 @@
 
 var db = require('mongo-promise')
-
 db.shortcut('cache')
 
 module.exports = function(app) {
 
   app.get('/cache', function(req, res) {
+    return res.send([])
     actions.search(req.params.q || {}).then(function(results) {
       res.send(results)
     }, function() {

@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+- 0.10.x
+services: 
+  - mongodb
+  - redis
+deploy:
+  provider: heroku
+  api_key:
+    secure: adCPWHxAcNutM+iSUSB1lW2xoZE7F+vLkENP/1KaqhOPvyd+kPoYIxhSshdxwtkzB0w7MnldqwBD8UyA70MdeofMyOCdjgQ3K0vTKWXKNJma8ZX8ErVAQAf6ShgsKCk9LaCqNftLJHuaauNdq3Fa03lfp5GIoDEdM4nZ68sLx8s=
+  app: volary-eagle-staging
+  strategy: git
+  on:
+    repo: VolaryFoundation/Eagle
+notifications:
+  email:
+    recipients:
+    - nick@volary.org
+    - lorne@volary.org
+    - brendan@volary.org
+    - michael@volary.org
+    on_success: change
+    on_failure: always

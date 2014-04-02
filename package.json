@@ -12,6 +12,7 @@
     "config": "^0.4.35",
     "cors": "^2.2.0",
     "express": "^3.5.1",
+    "gathererjs": "0.0.1",
     "lodash": "^2.4.1",
     "mongo-promise": "0.0.45",
     "rsvp": "^3.0.6",

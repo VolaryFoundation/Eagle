@@ -1,7 +1,5 @@
 
 var db = require('mongo-promise')
-var actions = require('../actions/entity_actions')
-
 db.shortcut('entities')
 
 module.exports = function(app) {
