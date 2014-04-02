@@ -4,7 +4,7 @@
   "description": "",
   "main": "app/boot.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "mocha --recursive --compilers coffee:coffee-script/register ./test"
   },
   "author": "",
   "license": "ISC",
