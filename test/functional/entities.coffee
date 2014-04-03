@@ -62,9 +62,9 @@ describe 'Entity Functionality', ->
   describe 'updating', ->
 
     it 'should update', (done) ->
-      db.entities.insert({}).then (inserted) ->
+      db.entities.insert({ refs: [ { id: 1, adapter: 'fb' }, { id: 2, adapter: 'mu' } ] }).then (inserted) ->
         modified = jsonify(inserted[0])
-        modified.a = 1
+        modified.refs.pop()
         app.put('/entities/' + modified._id).send(modified)
           .expect(modified)
           .end(done)
