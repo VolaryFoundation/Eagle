@@ -3,14 +3,14 @@ request = require('supertest')
 app = request(require('../../app/server'))
 db = require('mongo-promise')
 expect = require('expect.js')
-groups = require('../../app/types/group_type')
 _ = require('lodash')
 
 jsonify = (obj) ->
   JSON.parse(JSON.stringify(obj))
 
 addGroups = (configs, cb) ->
-  db.cache.insert(_.extend({ _type: 'group', _entityId: 0 }, configs), { w: 1 }, cb)
+  db.cache.insert(configs.map(_.extend.bind(_, { _type: 'group', _entityId: 0 })), { w: 1 }).then(cb)
+
 
 describe 'Cache Functionality', ->
 
@@ -56,18 +56,19 @@ describe 'Cache Functionality', ->
         .expect(200, [])
         .end(done)
 
-
     describe 'keys', ->
 
       it 'should return a root level key', (done) ->
-        groups.search({ keys: { name: 'bat' } }).then (arr) ->
-          expect(arr.length).to.be(1)
-          expect(arr[0].a.b).to.be('d')
-          done()
+        addGroups [ { name: 'bat', a: { b: 'd' } } ], (inserted) ->
+          groups = jsonify(inserted)
+          app.get('/cache?type=group&q[keys][name]=bat')
+            .expect(groups)
+            .end(done)
 
       it 'should work on a nested key', (done) ->
-        groups.search({ keys: { 'a.b': 'd' } }).then (arr) ->
-          expect(arr.length).to.be(2)
-          expect(arr[0].a.b).to.be('d')
-          expect(arr[1].a.b).to.be('d')
-          done()
+        addGroups [ { name: 'bat', a: { b: 'd' } } ], (inserted) ->
+          groups = jsonify(inserted)
+          app.get('/cache?type=group&q[keys][a.b]=d')
+            .expect(groups)
+            .end(done)
+

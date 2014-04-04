@@ -1,8 +1,6 @@
 
 var db = require('mongo-promise')
-var types = require('../types/index')()
-
-db.shortcut('cache')
+var types = require('../types/index')
 
 module.exports = function(app) {
 
@@ -19,7 +17,8 @@ module.exports = function(app) {
   })
 
   app.get('/cache/:id', function(req, res) {
-    db.cache.find({ _entityId: req.params.id }).then(function(result) {
+    var type = types[req.query.type]
+    db[type.collection].find({ _entityId: req.params.id }).then(function(result) {
       res.send(result[0])
     }, function() {
       res.send(500)
@@ -27,7 +26,9 @@ module.exports = function(app) {
   })
 
   app.del('/cache/:id', function(req, res) {
-    db.cache.remove({ _entityId: req.params.id }).then(function() {
+    var type = types[req.query.type]
+    db.entities.findById(req.params.id).then(type.warm.bind(type))
+    db[type.collection].remove({ _entityId: req.params.id }).then(function() {
       res.send(200)
     }, function() {
       res.send(500)

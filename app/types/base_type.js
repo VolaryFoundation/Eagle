@@ -1,0 +1,54 @@
+
+var gatherer = require('../lib/gatherer')
+var db = require('mongo-promise')
+var _ = require('lodash')
+var rsvp = require('rsvp')
+
+function slowly(fn) {
+  
+}
+
+module.exports = {
+
+  warmMany: function(arr) {
+    var obj = arr[0]
+    if (!obj) return
+    this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 200))
+  },
+
+  warm: function(obj) {
+    return new rsvp.Promise(function(res, rej) {
+      if (!obj.refs.length) return res()
+
+      gatherer.gather({
+        refs: obj.refs,
+        adapters: this.adapters
+      }).then(function(data) {
+        data._entityId = obj._id
+        db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true }, res)
+      }.bind(this))
+    }.bind(this))
+  },
+
+  isOutdated: function(obj) {
+    console.log('is outdated??')
+    if (!obj._meta || !obj._meta.fields) return true
+
+    var now = Date.now() / 1000
+    var expiries = _.pluck(obj._meta.fields, 'expires')
+    return _.any(expiries, function(exp) { return exp < now })
+  },
+
+  search: function(params) {
+
+    var fields = params.fields
+    var query = this.buildQuery(params.q || {})
+    var opts = { skip: parseInt(params.skip || 0), limit: parseInt(params.limit || 500) }
+
+    return db[this.collection].find(query, fields, opts).then(function(results) {
+      _.filter(results, this.isOutdated).forEach(this.warm.bind(this))
+      return results
+    }.bind(this))
+  }
+
+}
