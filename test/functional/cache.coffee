@@ -9,24 +9,24 @@ jsonify = (obj) ->
   JSON.parse(JSON.stringify(obj))
 
 addGroups = (configs, cb) ->
-  db.cache.insert(configs.map(_.extend.bind(_, { _type: 'group', _entityId: 0 })), { w: 1 }).then(cb)
+  db.groups.insert(configs.map(_.extend.bind(_, { _type: 'group', _entityId: 0 })), { w: 1 }).then(cb)
 
 
 describe 'Cache Functionality', ->
 
   beforeEach (done) ->
-    db.getCollection('cache').then (coll) ->
+    db.getCollection('groups').then (coll) ->
       coll.drop()
       done()
 
   describe 'getting by id', ->
     
     it 'should return cache object', (done) ->
-      db.entities.insert({}).then (inserted) ->
+      db.groups.insert({}).then (inserted) ->
         entity = jsonify(inserted[0])
-        db.cache.insert({ _entityId: entity._id }).then (inserted) ->
+        db.groups.insert({ _entityId: entity._id }).then (inserted) ->
           cached = jsonify(inserted[0])
-          app.get('/cache/' + cached._entityId)
+          app.get('/cache/' + cached._entityId + '?type=group')
             .expect(cached)
             .end(done)
 
@@ -35,11 +35,11 @@ describe 'Cache Functionality', ->
     it 'should return remove the cache entry for given entity id', (done) ->
       db.entities.insert({}).then (inserted) ->
         entity = jsonify(inserted[0])
-        db.cache.insert({ _entityId: entity._id }).then (inserted) ->
+        db.groups.insert({ _entityId: entity._id }).then (inserted) ->
           cached = jsonify(inserted[0])
-          app.del('/cache/' + cached._entityId)
+          app.del('/cache/' + cached._entityId + '?type=group')
             .end( ->
-              db.cache.findById(cached._id).then (found) ->
+              db.groups.findById(cached._id).then (found) ->
                 expect(found).to.be(null)
                 done()
             )

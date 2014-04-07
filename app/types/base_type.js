@@ -4,10 +4,6 @@ var db = require('mongo-promise')
 var _ = require('lodash')
 var rsvp = require('rsvp')
 
-function slowly(fn) {
-  
-}
-
 module.exports = {
 
   warmMany: function(arr) {
@@ -24,14 +20,15 @@ module.exports = {
         refs: obj.refs,
         adapters: this.adapters
       }).then(function(data) {
-        data._entityId = obj._id
-        db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true }, res)
+        data._entityId = obj._id + ''
+        db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true, 'new':true }).then(function(doc) {
+          res(doc)
+        })
       }.bind(this))
     }.bind(this))
   },
 
   isOutdated: function(obj) {
-    console.log('is outdated??')
     if (!obj._meta || !obj._meta.fields) return true
 
     var now = Date.now() / 1000
@@ -49,6 +46,15 @@ module.exports = {
       _.filter(results, this.isOutdated).forEach(this.warm.bind(this))
       return results
     }.bind(this))
+  },
+
+  validateRefs: function(refs) {
+    return refs.map(function(ref) {
+      if (!this.adapters[ref.adapter].canUse(ref.id)) {
+        ref.status = 'broken'
+      }
+      return ref
+    }, this)
   }
 
 }

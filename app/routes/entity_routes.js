@@ -1,6 +1,19 @@
 
 var db = require('mongo-promise')
+var types = require('../types/index')
+var _ = require('lodash')
 db.shortcut('entities')
+
+function validate(entity) {
+  if (!entity.type) return 'Missing type'
+  var type = types[entity.type]
+  if (!type) return 'Unrecognized type'
+  if (!entity.refs) return 'Need at least one ref'
+  entity.refs = type.validateRefs(entity.refs) // side-effect
+  if (_.any(entity.refs, { status: 'broken' })) {
+    return 'Invalid ref'
+  }
+}
 
 module.exports = function(app) {
 
@@ -23,6 +36,12 @@ module.exports = function(app) {
   })
 
   app.post('/entities', function(req, res) {
+
+    var error = validate(req.body)
+    if (error) {
+      return res.send(500, { msg: error, entity: req.body })
+    }
+
     db.entities.insert(req.body).then(function(entity) {
       res.send(201, entity)
     }, function() {
@@ -31,6 +50,12 @@ module.exports = function(app) {
   })
 
   app.put('/entities/:id', function(req, res) {
+
+    var error = validate(req.body)
+    if (error) {
+      return res.send(500, { msg: error, entity: req.body })
+    }
+
     db.entities.update({ _id: req.params.id }, req.body).then(function(entity) {
       res.send(200, entity)
     }, function() {

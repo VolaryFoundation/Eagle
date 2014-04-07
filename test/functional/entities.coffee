@@ -52,17 +52,53 @@ describe 'Entity Functionality', ->
           .expect(doc)
           .end(done)
 
+  describe 'validations', ->
+    
+    it 'should require type', (done) ->
+      app.post('/entities').send({})
+        .expect((res) ->
+          return 'Should have been missing type' unless (res.body.msg is 'Missing type')
+        ).end(done)
+
+    it 'should require recognized type', (done) ->
+      app.post('/entities').send({ type: 'foo' })
+        .expect((res) ->
+          return 'Should have not recognized type' unless res.body.msg is 'Unrecognized type'
+        ).end(done)
+
+    it 'should require refs', (done) ->
+      app.post('/entities').send({ type: 'group' })
+        .expect((res) ->
+          return 'Should have found refs missing' unless res.body.msg is 'Need at least one ref'
+        ).end(done)
+
+    it 'should require all refs to be "usable" by their adapter', (done) ->
+      app.post('/entities').send({
+        type: 'group',
+        refs: [ { adapter: 'facebook', id: 1 } ]
+      }).expect((res) ->
+        return 'Should have found facebook ref unusable' unless res.body.msg is 'Invalid ref'
+      ).end(done)
+
+    it 'should return ref as "broken" if it failed test', (done) ->
+      app.post('/entities').send({
+        type: 'group',
+        refs: [ { adapter: 'facebook', id: 1 } ]
+      }).expect((res) ->
+        return 'Should have found facebook ref status as "broken"' unless res.body.entity.refs[0].status is 'broken'
+      ).end(done)
+
   describe 'creating', ->
 
     it 'should create', (done) ->
-      app.post('/entities').send({ a: 1 })
+      app.post('/entities').send({ refs: [], type: 'group' })
         .expect(201)
         .end(done)
 
   describe 'updating', ->
 
     it 'should update', (done) ->
-      db.entities.insert({ refs: [ { id: 1, adapter: 'fb' }, { id: 2, adapter: 'mu' } ] }).then (inserted) ->
+      db.entities.insert({ refs: [ { id: 'facebook.com/1', adapter: 'facebook' }, { id: 2, adapter: 'meetup' } ], type: 'group' }).then (inserted) ->
         modified = jsonify(inserted[0])
         modified.refs.pop()
         app.put('/entities/' + modified._id).send(modified)
