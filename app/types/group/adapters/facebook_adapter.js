@@ -1,3 +1,4 @@
+
 var _ = require('lodash')
 var facebook = require('fbgraph')
 var rsvp = require('rsvp')
@@ -5,8 +6,8 @@ var https = require('https')
 var synonyms = require('../../../lib/synonyms')
 var withKeywords = require('../../../lib/keywordize')
 
-facebook.setAccessToken('CAACzKUBNQswBAJZCN3FB7TeCPRCRkCjCXtZBSlOnpzEA5OJi0WvL2ZBYgqS0kPFKiEsRVNZCVqZA8oRvNzOObC1k4jxs4bJSTloSW0ZCTyTG4KQalqCZBzPlZCK7fRWslUsYOC3UxHP6ZCp2m6gdtKAalF5ymVoOQGHevRzW4DLwGNnw1iuFaOCQd')
-    
+facebook.setAccessToken('196989753836236|Z34vb_B1-WpG7SxsfJbqsgHYPVA')
+
 function downcase(val) {
   if (!val) return ''
   return val.toLowerCase()
@@ -68,8 +69,10 @@ var facebookAdapter = {
     return new rsvp.Promise(function(res, rej) {
       var id = this.parseId(url)
       try {
+        console.log('getting from facebook ', id)
         facebook.get('/' + id, function(e, data) {
 
+          console.log('got from facebook ', e, data)
           if (e) data = {}
 
           res({
