@@ -35,6 +35,7 @@ module.exports = {
       })
     })
 
+    console.log('FETCH?????')
     var fetched = refs.map(function(ref, i) {
       return adapters[i].fetch(ref.id)
     })
