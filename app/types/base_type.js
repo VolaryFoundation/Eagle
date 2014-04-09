@@ -13,19 +13,17 @@ module.exports = {
   },
 
   warm: function(obj) {
-    return new rsvp.Promise(function(res, rej) {
-      if (!obj.refs.length) return res()
+    if (!obj.refs.length) return new rsvp.Promise(function(res) { res() })
 
-      gatherer.gather({
-        refs: obj.refs,
-        adapters: this.adapters
-      }).then(function(data) {
-        data._entityId = obj._id.toString()
-        db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true, 'new':true }).then(function(doc) {
-          res(doc)
-        })
-      }.bind(this))
-    }.bind(this))
+    return gatherer.gather({
+      refs: obj.refs,
+      adapters: this.adapters
+    }).then(function(data) {
+      data._entityId = obj._id.toString()
+      return db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true, 'new':true }).then(function(doc) {
+        return doc
+      })
+    }.bind(this), function() { console.log('ERROR: ', arguments) })
   },
 
   isOutdated: function(obj) {
