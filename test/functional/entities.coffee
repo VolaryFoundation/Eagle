@@ -3,18 +3,37 @@ request = require('supertest')
 app = request(require('../../app/server'))
 db = require('mongo-promise')
 expect = require('expect.js')
+crypto = require('crypto')
 
 jsonify = (obj) ->
   JSON.parse(JSON.stringify(obj))
 
+hash = (ts, authSecret) ->
+  crypto.createHash('md5').update(ts, authSecret).digest('hex')
+
+authorize = (key, secret) ->
+  ts = Date.now().toString()
+  obj = {
+    authTimestamp: ts,
+    authId: key,
+    authSecret: secret,
+    authHash: hash(ts, secret)
+  }
+  obj.toString =  -> "authId=#{@authId}&authHash=#{@authHash}&authTimestamp=#{@authTimestamp}"
+  return obj
+
 describe 'Entity Functionality', ->
 
   beforeEach (done) ->
-    db.getCollection('entities').then (coll) ->
+
+    db.getCollection('clients').then (coll) ->
       coll.drop()
-      db.getCollection('entities_bl').then (coll) ->
-        coll.drop()
-        done()
+      coll.insert { authId: 'abc', authSecret: 'def' }, { w: 1 }, (e, client) ->
+        db.getCollection('entities').then (coll) ->
+          coll.drop()
+          db.getCollection('entities_bl').then (coll) ->
+            coll.drop()
+            done()
 
   describe 'getting bulk', ->
 
@@ -55,25 +74,29 @@ describe 'Entity Functionality', ->
   describe 'validations', ->
     
     it 'should require type', (done) ->
-      app.post('/entities').send({})
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({})
         .expect((res) ->
           return 'Should have been missing type' unless (res.body.msg is 'Missing type')
         ).end(done)
 
     it 'should require recognized type', (done) ->
-      app.post('/entities').send({ type: 'foo' })
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({ type: 'foo' })
         .expect((res) ->
           return 'Should have not recognized type' unless res.body.msg is 'Unrecognized type'
         ).end(done)
 
     it 'should require refs', (done) ->
-      app.post('/entities').send({ type: 'group' })
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({ type: 'group' })
         .expect((res) ->
           return 'Should have found refs missing' unless res.body.msg is 'Need at least one ref'
         ).end(done)
 
     it 'should require all refs to be "usable" by their adapter', (done) ->
-      app.post('/entities').send({
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({
         type: 'group',
         refs: [ { adapter: 'facebook', id: 1 } ]
       }).expect((res) ->
@@ -81,7 +104,8 @@ describe 'Entity Functionality', ->
       ).end(done)
 
     it 'should return ref as "broken" if it failed test', (done) ->
-      app.post('/entities').send({
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({
         type: 'group',
         refs: [ { adapter: 'facebook', id: 1 } ]
       }).expect((res) ->
@@ -90,8 +114,14 @@ describe 'Entity Functionality', ->
 
   describe 'creating', ->
 
+    it 'should require auth', (done) ->
+      app.post('/entities')
+        .expect(401)
+        .end(done)
+
     it 'should create', (done) ->
-      app.post('/entities').send({ refs: [], type: 'group' })
+      auth = authorize('abc', 'def')
+      app.post('/entities?' + auth.toString()).send({ refs: [], type: 'group' })
         .expect(201)
         .end(done)
 
@@ -99,9 +129,10 @@ describe 'Entity Functionality', ->
 
     it 'should update', (done) ->
       db.entities.insert({ refs: [ { id: 'facebook.com/1', adapter: 'facebook' }, { id: 2, adapter: 'meetup' } ], type: 'group' }).then (inserted) ->
+        auth = authorize('abc', 'def')
         modified = jsonify(inserted[0])
         modified.refs.pop()
-        app.put('/entities/' + modified._id).send(modified)
+        app.put('/entities/' + modified._id + '?' + auth.toString()).send(modified)
           .expect(modified)
           .end(done)
 
@@ -110,7 +141,8 @@ describe 'Entity Functionality', ->
     it 'should remove from entities collection', (done) ->
       db.entities.insert({}).then (inserted) ->
         doc = jsonify(inserted[0])
-        app.del('/entities/' + doc._id)
+        auth = authorize('abc', 'def')
+        app.del('/entities/' + doc._id + '?' + auth.toString())
           .end ->
             db.entities.findById(doc._id).then (found) ->
               expect(!found).to.be(true)

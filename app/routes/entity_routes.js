@@ -4,7 +4,9 @@ var types = require('../types/index')
 var _ = require('lodash')
 db.shortcut('entities')
 
-var passport = require('passport');
+var passport = require('passport')
+var ClientKeyStrategy = require('../lib/client_key_strategy')
+passport.use(new ClientKeyStrategy)
 var requireClientKey = passport.authenticate('client-key');
 
 function validate(entity) {
@@ -39,7 +41,6 @@ module.exports = function(app) {
   })
 
   app.post('/entities', requireClientKey, function(req, res) {
-
     var error = validate(req.body)
     if (error) {
       return res.send(500, { msg: error, entity: req.body })
