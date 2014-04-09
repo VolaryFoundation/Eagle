@@ -4,6 +4,9 @@ var types = require('../types/index')
 var _ = require('lodash')
 db.shortcut('entities')
 
+var passport = require('passport');
+var requireClientKey = passport.authenticate('client-key');
+
 function validate(entity) {
   if (!entity.type) return 'Missing type'
   var type = types[entity.type]
@@ -35,7 +38,7 @@ module.exports = function(app) {
     })
   })
 
-  app.post('/entities', function(req, res) {
+  app.post('/entities', requireClientKey, function(req, res) {
 
     var error = validate(req.body)
     if (error) {
@@ -49,7 +52,7 @@ module.exports = function(app) {
     })
   })
 
-  app.put('/entities/:id', function(req, res) {
+  app.put('/entities/:id', requireClientKey, function(req, res) {
 
     var error = validate(req.body)
     if (error) {
@@ -64,7 +67,7 @@ module.exports = function(app) {
   })
 
   // remove entity and add to blacklist
-  app.del('/entities/:id', function(req, res) {
+  app.del('/entities/:id', requireClientKey, function(req, res) {
     db.entities.find({ _id: req.params.id }).then(function(entity) {
       db.entities.remove({ _id: req.params.id })
       db.getCollection('entities_bl').then(function(coll) {
