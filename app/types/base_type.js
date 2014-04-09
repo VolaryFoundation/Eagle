@@ -9,7 +9,7 @@ module.exports = {
   warmMany: function(arr) {
     var obj = arr[0]
     if (!obj) return
-    this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 200))
+    this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000))
   },
 
   warm: function(obj) {
