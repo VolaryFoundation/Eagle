@@ -38,13 +38,15 @@ module.exports = {
     console.log('FETCH?????')
     var fetched = refs.map(function(ref, i) {
       console.log('gonna fetch ref????', ref, adapters[i])
-      return adapters[i].fetch(ref.id)
+      return adapters[i] ? adapters[i].fetch(ref.id) : util.passing()
     })
 
     console.log('fetching....')
     return rsvp.all(fetched).then(function(results) {
       console.log('fetched ', results)
       return results.reduce(function(data, result, i) {
+        if (!result) return data;
+
         var built = util.buildForAdapter(adapters[i], result.raw)
         return _.reduce(built, function(data, v, k) {
           var preferred = false
