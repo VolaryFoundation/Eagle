@@ -66,8 +66,9 @@ var facebookAdapter = {
   },
 
   fetch: function(url, props) {
+    console.log('url', url, this.parseId)
     var id = this.parseId(url)
-      console.log('getting id ', id)
+    console.log('getting id ', id)
     return new rsvp.Promise(function(res, rej) {
       facebook.get('/' + id, function(e, data) {
 
