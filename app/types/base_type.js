@@ -19,6 +19,7 @@ module.exports = {
       refs: obj.refs,
       adapters: this.adapters
     }).then(function(data) {
+      console.log('FOUIND DATA')
       data._entityId = obj._id.toString()
       return db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true, 'new':true }).then(function(doc) {
         return doc

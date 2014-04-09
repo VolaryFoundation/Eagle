@@ -39,7 +39,9 @@ module.exports = {
       return adapters[i].fetch(ref.id)
     })
 
+    console.log('fetching....')
     return rsvp.all(fetched).then(function(results) {
+      console.log('fetched ', results)
       return results.reduce(function(data, result, i) {
         var built = util.buildForAdapter(adapters[i], result.raw)
         return _.reduce(built, function(data, v, k) {
