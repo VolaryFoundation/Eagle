@@ -66,25 +66,20 @@ var facebookAdapter = {
   },
 
   fetch: function(url, props) {
+    var id = this.parseId(url)
     return new rsvp.Promise(function(res, rej) {
-      var id = this.parseId(url)
-      try {
-        console.log('getting from facebook ', id)
-        facebook.get('/' + id, function(e, data) {
+      facebook.get('/' + id, function(e, data) {
 
-          console.log('got from facebook ', e, data)
-          if (e) data = {}
-
+        console.log('got from facebook ', e, data)
+        if (e || !data) { return res(null) }
+        else {
           res({
             meta: { source: 'facebook', expires: Math.round((Date.now() / 1000) + 172800) },
             raw: data
           })
-
-        }.bind(this))
-      } catch(e) {
-        res(null)
-      }
-    }.bind(this))
+        }
+      })
+    })
   },
 
   test: function(cb) {
