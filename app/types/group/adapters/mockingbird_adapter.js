@@ -78,6 +78,7 @@ var mockingbirdAdapter = {
             return res(null)
           }
 
+          console.log('fetched from mb', data)
           res({
             meta: { source: 'mockingbird', expires: Math.round((Date.now() / 1000) + 172800) },
             raw: data
