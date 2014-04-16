@@ -14,7 +14,7 @@ var util = {
 
   buildForAdapter: function(adapter, raw) {
     return _.reduce(adapter.getters, function(memo, v, k) {
-      console.log(k, v, memo)
+      console.log(k, v, memo, raw)
       var val = v(raw)
       if (val != null) {
         memo[k] = val
@@ -47,7 +47,7 @@ module.exports = {
       return results.reduce(function(data, result, i) {
         if (!result) return data;
 
-        console.log('processing fetched')
+        console.log('processing fetched', result)
         var built = util.buildForAdapter(adapters[i], result.raw)
         return _.reduce(built, function(data, v, k) {
           var preferred = false
