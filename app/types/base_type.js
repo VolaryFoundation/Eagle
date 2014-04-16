@@ -46,6 +46,7 @@ module.exports = {
 
   // takes cache
   isOutdated: function(obj) {
+    console.log('is outdated?', obj)
     if (!obj._meta || !obj._meta.fields) return true
 
     var now = Date.now() / 1000
@@ -62,6 +63,7 @@ module.exports = {
     var query = this.buildQuery(params.q || {})
     var opts = { skip: parseInt(params.skip || 0), limit: parseInt(params.limit || 500) }
 
+    console.log('searching')
     return db[this.collection].find(query, fields, opts).then(function(results) {
       _.filter(results, this.isOutdated).forEach(this.warm.bind(this))
       return results
