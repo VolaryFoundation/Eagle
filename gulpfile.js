@@ -14,20 +14,24 @@ gulp.task('warm-groups', function() {
 
 gulp.task('build-groups', function() {
 
+  var _ = require('lodash')
   var db = require('mongo-promise')
+  var rsvp = require('rsvp')
   db.url = process.env.MONGOHQ_URL
   var groups = require('./app/types/group/group_type')
   db.shortcut('entities')
 
-  db.entities.find({ type: 'group' }).then(function(groups) { 
-    var ps = groups.map(function(group) { return db.groups.find({ _entityId: group._id.toString() }).then(function(groups) { return groups ? groups[0] : groups }) })
+  db.entities.find({ type: 'group' }, {}, { limit: 10 }).then(function(groups) { 
+    var ps = groups.map(function(group, i) { return db.groups.find({ _entityId: group._id.toString() }) })
     rsvp.all(ps).then(function(results) {
       var missing = results.map(function(result, i) {
-        if (!result) {
+        if (!result[0]) {
           return groups[i]; 
         }
-      })
+      }).filter(function(m) { return m })
+      console.log('warming many ', missing)
       groups.warmMany(missing)
-    })
+    }, console.log)
   })
+
 })
