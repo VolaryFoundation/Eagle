@@ -18,7 +18,7 @@ gulp.task('build-groups', function() {
   var db = require('mongo-promise')
   var rsvp = require('rsvp')
   db.url = process.env.MONGOHQ_URL
-  var groups = require('./app/types/group/group_type')
+  var groupType = require('./app/types/group/group_type')
   db.shortcut('entities')
 
   db.entities.find({ type: 'group' }, {}, { limit: 10 }).then(function(groups) { 
@@ -30,8 +30,8 @@ gulp.task('build-groups', function() {
         }
       }).filter(function(m) { return m })
       console.log('warming many ', missing)
-      groups.warmMany(missing)
+      groupType.warmMany(missing)
     }, console.log)
   })
-
+    
 })

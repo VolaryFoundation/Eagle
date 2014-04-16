@@ -45,7 +45,7 @@ module.exports = {
 
     return rsvp.all(fetched).then(function(results) {
       return results.reduce(function(data, result, i) {
-        if (!result) return data;
+        if (!result || !result.raw) return data;
 
         console.log('processing fetched', result)
         var built = util.buildForAdapter(adapters[i], result.raw)
