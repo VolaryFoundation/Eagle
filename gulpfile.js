@@ -16,6 +16,7 @@ gulp.task('build-groups', function() {
   //require('./app/server')
   var db = require('mongo-promise')
   var config = require('config')
+  db.shortcut('entities')
   db.url = process.env.MONGOHQ_URL || config.servers.mongodb
   var groups = require('./app/types/group/group_type')
   db.entities.find({ type: 'group' }).then(function(entities) {
