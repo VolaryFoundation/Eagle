@@ -20,7 +20,6 @@ ClientKeyStrategy.prototype.authenticate = function(req, options) {
   db.clients.find({ authId: authId }).then(function(clients) {
     var client = clients[0]
     if (!client || crypto.createHash('md5').update(authTimestamp).update(client.authSecret).digest('hex') != authHash) {
-
       return this.fail()
     }
     req.user = client
