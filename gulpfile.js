@@ -13,13 +13,21 @@ gulp.task('warm-groups', function() {
 })
 
 gulp.task('build-groups', function() {
-  //require('./app/server')
+
   var db = require('mongo-promise')
-  var config = require('config')
-  db.shortcut('entities')
-  db.url = process.env.MONGOHQ_URL || config.servers.mongodb
+  db.url = process.env.MONGOHQ_URL
   var groups = require('./app/types/group/group_type')
-  db.entities.find({ type: 'group' }).then(function(entities) {
-    groups.warmMany(entities)
+  db.shortcut('entities')
+
+  db.entities.find({ type: 'group' }).then(function(groups) { 
+    var ps = groups.map(function(group) { return db.groups.find({ _entityId: group._id.toString() }).then(function(groups) { return groups ? groups[0] : groups }) })
+    rsvp.all(ps).then(function(results) {
+      var missing = results.map(function(result, i) {
+        if (!result) {
+          return groups[i]; 
+        }
+      })
+      groups.warmMany(missing)
+    })
   })
 })
