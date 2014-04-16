@@ -12,7 +12,6 @@ function ClientKeyStrategy() {
 util.inherits(ClientKeyStrategy, passport.Strategy)
 
 ClientKeyStrategy.prototype.authenticate = function(req, options) {
-
   var authId = req.param('authId')
   var authHash = req.param('authHash')
   var authTimestamp = req.param('authTimestamp')
