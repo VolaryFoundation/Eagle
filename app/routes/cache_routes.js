@@ -23,7 +23,6 @@ module.exports = function(app) {
 
     db[type.collection].find({ _entityId: req.params.id }).then(function(result) {
       if (!result[0] || req.query.refresh) {
-        console.log('gonna warm')
         return db.entities.findById(req.params.id)
           .then(type.warm.bind(type))
           .then(res.send.bind(res, 200))

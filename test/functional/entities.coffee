@@ -125,16 +125,29 @@ describe 'Entity Functionality', ->
         .expect(201)
         .end(done)
 
+    it 'should cause cache to be built', (done) ->
+      auth = authorize('abc', 'def')
+      app
+        .post('/entities?' + auth.toString())
+        .send({
+          refs: [ { adapter: 'foo', id: '1' } ], type: 'group'
+        })
+        .expect((res) ->
+          
+        ).end(done)
+
   describe 'updating', ->
 
     it 'should update', (done) ->
-      db.entities.insert({ refs: [ { id: 'facebook.com/1', adapter: 'facebook' }, { id: 2, adapter: 'meetup' } ], type: 'group' }).then (inserted) ->
+      db.entities.insert({ mock: true, refs: [ { id: 'facebook.com/1', adapter: 'facebook' }, { id: 2, adapter: 'meetup' } ], type: 'group' }).then (inserted) ->
         auth = authorize('abc', 'def')
         modified = jsonify(inserted[0])
         modified.refs.pop()
         app.put('/entities/' + modified._id + '?' + auth.toString()).send(modified)
           .expect(modified)
           .end(done)
+
+    xit 'should cause cache to be rebuilt', (done) ->
 
   describe 'blacklisting', ->
 
@@ -147,4 +160,6 @@ describe 'Entity Functionality', ->
             db.entities.findById(doc._id).then (found) ->
               expect(!found).to.be(true)
               done()
+
+    xit 'should cause corrosponding cache to be deleted', (done) ->
 

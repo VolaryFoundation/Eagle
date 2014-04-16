@@ -35,15 +35,14 @@ module.exports = {
       })
     })
 
-    console.log('FETCH?????')
+    // if there is an eronious ref in there (missing adapter)
+    // just return a passing promise.. we will filter it out
+    // in the rsvp.all
     var fetched = refs.map(function(ref, i) {
-      console.log('gonna fetch ref????', ref, adapters[i])
       return adapters[i] ? adapters[i].fetch(ref.id) : util.passing()
     })
 
-    console.log('fetching....')
     return rsvp.all(fetched).then(function(results) {
-      console.log('fetched ', results)
       return results.reduce(function(data, result, i) {
         if (!result) return data;
 

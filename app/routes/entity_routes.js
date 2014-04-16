@@ -46,7 +46,9 @@ module.exports = function(app) {
       return res.send(500, { msg: error, entity: req.body })
     }
 
-    db.entities.insert(req.body).then(function(entity) {
+    db.entities.insert(req.body).then(function(entities) {
+      var entity = entities[0]
+      types[entity.type].warm(entity)
       res.send(201, entity)
     }, function() {
       res.send(500)
@@ -61,6 +63,7 @@ module.exports = function(app) {
     }
 
     db.entities.update({ _id: req.params.id }, req.body).then(function(entity) {
+      types[entity.type].warm(entity)
       res.send(200, entity)
     }, function() {
       res.send(500)

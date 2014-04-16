@@ -56,17 +56,24 @@ describe 'Cache Functionality', ->
         .expect(200, [])
         .end(done)
 
+    describe 'fields', ->
+
+      it 'should not break with fields', (done) ->
+        app.get('/cache?type=group&fields[name]=true')
+          .expect(200)
+          .end(done)
+
     describe 'keys', ->
 
       it 'should return a root level key', (done) ->
-        addGroups [ { name: 'bat', a: { b: 'd' } } ], (inserted) ->
+        addGroups [ { name: 'bat', a: { b: 'd' }, mock: true } ], (inserted) ->
           groups = jsonify(inserted)
           app.get('/cache?type=group&q[keys][name]=bat')
             .expect(groups)
             .end(done)
 
       it 'should work on a nested key', (done) ->
-        addGroups [ { name: 'bat', a: { b: 'd' } } ], (inserted) ->
+        addGroups [ { name: 'bat', a: { b: 'd' }, mock: true } ], (inserted) ->
           groups = jsonify(inserted)
           app.get('/cache?type=group&q[keys][a.b]=d')
             .expect(groups)

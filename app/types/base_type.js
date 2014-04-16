@@ -12,26 +12,47 @@ module.exports = {
     this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000))
   },
 
+  // takes entity or cache
   warm: function(obj) {
-    if (!obj.refs.length) return new rsvp.Promise(function(res) { res() })
+    
+    // skip warming if we are using a mock object
+    if (obj.mock) return new rsvp.Promise(function(res) { res() })
 
-    return gatherer.gather({
-      refs: obj.refs,
-      adapters: this.adapters
-    }).then(function(data) {
-      console.log('FOUIND DATA')
-      data._entityId = obj._id.toString()
-      return db[this.collection].findAndModify({ _entityId: obj._id }, null, data, { upsert: true, 'new':true }).then(function(doc) {
-        return doc
-      })
-    }.bind(this), function() { console.log('ERROR: ', arguments) })
+    var gather = function(obj) {
+      console.log('gathering ', obj)
+      return gatherer.gather({
+        refs: obj.refs,
+        adapters: this.adapters
+      }).then(function(data) {
+        data._entityId = obj._id.toString()
+        console.log('saving warmed data ', data)
+        return db[this.collection].findAndModify({ _entityId: data._entityId }, null, data, { upsert: true, 'new':true }).then(function(doc) {
+          console.log('save success')
+          return doc
+        }, function() { console.log('save fail') })
+      }.bind(this), function() { console.log('ERROR: ', arguments) })
+    }.bind(this)
+
+    // if given a cache
+    if (!obj.refs) {
+      return db.entities.findById(obj._entityId).then(function(cache) {
+        console.log('findbyid', obj._entityId, cache) 
+        gather(cache)
+      }, console.log)
+    } else {
+      return gather(obj)
+    }
   },
 
+  // takes cache
   isOutdated: function(obj) {
     if (!obj._meta || !obj._meta.fields) return true
 
     var now = Date.now() / 1000
-    var expiries = _.pluck(obj._meta.fields, 'expires')
+    var expiries = _.pluck(_.flatten(_.values(obj._meta.fields)), 'expires')
+    console.log('fields: ', _.values(_.flatten(obj._meta.fields)))
+    console.log('now: ', now)
+    console.log('expiries: ', expiries)
     return _.any(expiries, function(exp) { return exp < now })
   },
 
@@ -55,5 +76,4 @@ module.exports = {
       return ref
     }, this)
   }
-
 }

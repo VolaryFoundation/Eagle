@@ -2,7 +2,8 @@
 var adapters = {
   facebook: require('./adapters/facebook_adapter'),
   meetup: require('./adapters/meetup_adapter'),
-  atheistnexus: require('./adapters/atheistnexus_adapter')
+  atheistnexus: require('./adapters/atheistnexus_adapter'),
+  mockingbird: require('./adapters/mockingbird_adapter')
 }
 
 var base = require('../base_type')
