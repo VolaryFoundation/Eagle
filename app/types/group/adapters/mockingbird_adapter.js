@@ -31,7 +31,8 @@ var mockingbirdAdapter = {
       if (!raw.location || (!raw.location.state && !raw.location.country)) return
       var state = synonyms('states', raw.location.state)
       var country = synonyms('countries', raw.location.country)
-      return _.extend(raw.location, { state: state, country: country })
+      var city = (raw.location.city || '').toLowerCase()
+      return _.extend(raw.location, { state: state, country: country, city: city })
     },
 
     range: function(raw) {
