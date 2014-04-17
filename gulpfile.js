@@ -32,7 +32,8 @@ gulp.task('build-groups', function() {
         }).filter(function(m) { return m })
         console.log('warming many ', missing)
         groupType.warmMany(missing)
-        if (groups.length === 100) run(skip + 100)
+        console.log('check group length', groups.length)
+        if (groups.length === 100) setTimeout(function() { run(skip + 100) }, 2000)
       }, console.log)
     })
   }

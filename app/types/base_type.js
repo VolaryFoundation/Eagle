@@ -74,7 +74,7 @@ module.exports = {
 
   validateRefs: function(refs) {
     return refs.map(function(ref) {
-      if (!this.adapters[ref.adapter].canUse(ref.id)) {
+      if (!this.adapters[ref.adapter] || !this.adapters[ref.adapter].canUse(ref.id)) {
         ref.status = 'broken'
       }
       return ref
