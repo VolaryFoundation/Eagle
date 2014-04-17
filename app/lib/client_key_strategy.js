@@ -22,10 +22,13 @@ ClientKeyStrategy.prototype.authenticate = function(req, options) {
   db.clients
     console.log(clients[0])
     console.log("Auth Output")
+    console.log(req.param('authTimestamp'))
     console.log(req.param('authHash'))
     console.log("-------------------")
     var client = clients[0]
     console.log(crypto.createHash('md5').update(authTimestamp).update(client.authSecret).digest('hex'))
+    console.log(crypto.createHash('md5').update(authTimestamp, client.authSecret).digest('hex'))
+
     if (!client || crypto.createHash('md5').update(authTimestamp).update(client.authSecret).digest('hex') != authHash) {
       return this.fail()
     }
