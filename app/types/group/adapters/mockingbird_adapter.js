@@ -9,6 +9,10 @@ var MB_ROOT = CONFIG.mockingbird + 'api'
 
 var mockingbirdAdapter = {
 
+  canUse: function(id) {
+    return /\w+/.test(id)
+  },
+
   aggregate: function(normalized) {
     return withKeywords(normalized)
   },
