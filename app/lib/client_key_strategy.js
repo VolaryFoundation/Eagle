@@ -17,7 +17,7 @@ ClientKeyStrategy.prototype.authenticate = function(req, options) {
   var authTimestamp = req.param('authTimestamp')
 
   if (!authId || !authHash || !authTimestamp) return this.fail()
-
+  console.log(authId)
   db.clients.find({ authId: authId }).then(function(clients) {
     console.log("Auth Output")
     console.log(req.param('authHash'))
