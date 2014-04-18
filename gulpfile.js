@@ -21,22 +21,18 @@ gulp.task('build-groups', function() {
   var groupType = require('./app/types/group/group_type')
   db.shortcut('entities')
 
-  function run(skip) {
-    db.entities.find({ type: 'group' }, {}, { limit: 100, skip: skip, timeout: false }).then(function(groups) { 
-      var ps = groups.map(function(group, i) { return db.groups.find({ _entityId: group._id.toString() }) })
-      rsvp.all(ps).then(function(results) {
-        var missing = results.map(function(result, i) {
-          if (!result[0]) {
-            return groups[i]; 
-          }
-        }).filter(function(m) { return m })
-        console.log('warming many ', missing)
-        groupType.warmMany(missing)
-        console.log('check group length', groups.length)
-        if (groups.length === 100) setTimeout(function() { run(skip + 100) }, 2000)
-      }, console.log)
-    })
-  }
+  db.entities.find({ type: 'group' }, {}, { timeout: false }).then(function(groups) { 
+    var ps = groups.map(function(group, i) { return db.groups.find({ _entityId: group._id.toString() }) })
+    rsvp.all(ps).then(function(results) {
+      var missing = results.map(function(result, i) {
+        if (!result[0]) {
+          return groups[i]; 
+        }
+      }).filter(function(m) { return m })
+      console.log('warming many ', missing)
+      groupType.warmMany(missing)
+      console.log('check group length', groups.length)
+    }, console.log)
+  })
 
-  run(0)
 })
