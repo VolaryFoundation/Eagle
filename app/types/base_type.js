@@ -10,7 +10,7 @@ module.exports = {
     console.log('warming ', arr.length)
     var obj = arr[0]
     if (!obj) return
-    console.log('and warming first')
+    console.log('and warming first ')
     this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000))
   },
 
