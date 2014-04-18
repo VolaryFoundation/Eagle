@@ -1,6 +1,6 @@
 var _ = require('lodash')
 var rsvp = require('rsvp')
-var http = require('http')
+var request = require('request')
 var withKeywords = require('../../../lib/keywordize')
 var synonyms = require('../../../lib/synonyms')
 var CONFIG = require('config').servers;
@@ -68,32 +68,15 @@ var mockingbirdAdapter = {
   fetch: function(id, props) {
     console.log('fetching from MB ', id)
     return new rsvp.Promise(function(res, rej) {
-      var req = http.get(MB_ROOT + '/groups/' + id, function(resp) {
-      
-        var str = ''
-        resp.on('data', function(data) { str += data.toString() })
-
-        resp.on('end', function() {
-          if (!str) return res(null)
-
-          // incase some stupid response comes back
-          try {
-            var data = JSON.parse(str)
-          } catch(e) {
-            return res(null)
-          }
-
-          console.log('fetched from mb', data)
+      request(MB_ROOT + '/groups/' + id, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
           res({
             meta: { source: 'mockingbird', expires: Math.round((Date.now() / 1000) + 172800) },
-            raw: data
+            raw: body
           })
-        }.bind(this))
-
-      }.bind(this))
-
-      req.on('error', function(e) {
-        res(null)
+        } else {
+          res(null)
+        }
       })
     }.bind(this))
   }
