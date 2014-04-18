@@ -27,6 +27,7 @@ module.exports = {
         adapters: this.adapters
       }).then(function(data) {
         data._entityId = obj._id.toString()
+        data._refs = obj.refs
         console.log('saving warmed data ', data)
         return db[this.collection].findAndModify({ _entityId: data._entityId }, null, data, { upsert: true, 'new':true }).then(function(doc) {
           console.log('save success')
