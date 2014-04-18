@@ -30,7 +30,7 @@ gulp.task('build-groups', function() {
     db.groups.find({ _entityId: { '$in': _.invoke(_.pluck(groups, '_id'), 'toString') } }, { _entityId: true }).then(function(cached) {
       console.log('found cached length ', cached.length)
       var entityIds = _.invoke(_.pluck(cached, '_entityId'), 'toString')
-      var missing = groups.filter(function(group) { return _.contains(entityIds, group._id.toString()) })
+      var missing = groups.filter(function(group) { return !_.contains(entityIds, group._id.toString()) })
       console.log('warm many length', missing.length)
       groupType.warmMany(missing)
     }) 
