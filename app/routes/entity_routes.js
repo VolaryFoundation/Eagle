@@ -72,6 +72,7 @@ module.exports = function(app) {
 
   // remove entity and add to blacklist
   app.del('/entities/:id', requireClientKey, function(req, res) {
+    console.log('trying to remove entity')
     db.entities.find({ _id: req.params.id }).then(function(entity) {
       db.entities.remove({ _id: req.params.id })
       db.getCollection('entities_bl').then(function(coll) {
