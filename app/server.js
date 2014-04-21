@@ -8,7 +8,7 @@ var rsvp = require('rsvp')
 
 rsvp.on('error', console.log.bind(console, 'ERROR: '))
 
-db.url = process.env.MONGOHQ_URL || config.servers.mongodb
+db.url = process.env.MONGOLAB_URI || config.servers.mongodb
 
 server.use(express.bodyParser())
 server.use(cors({ origin: '*' }))
