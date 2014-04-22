@@ -11,7 +11,7 @@ module.exports = {
     var obj = arr[0]
     if (!obj) return
     console.log('and warming first ')
-    this.warm(obj).then(setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000))
+    this.warm(obj).then(function() { setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000) }.bind(this))
   },
 
   // takes entity or cache
