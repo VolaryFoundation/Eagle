@@ -11,12 +11,16 @@ module.exports = {
     var obj = arr[0]
     if (!obj) return
     console.log('and warming first ')
-    this.warm(obj).then(function() { setTimeout(this.warmMany.bind(this, arr.slice(1)), 2000) }.bind(this))
+    setTimeout(function() {
+      console.log('delayed 2000 ms')
+      this.warmMany(arr.slice(1))
+    }.bind(this), 2000)
   },
 
   // takes entity or cache
   warm: function(obj) {
     
+    console.log('going to warm something', obj)
     // skip warming if we are using a mock object
     if (obj.mock) return new rsvp.Promise(function(res) { res() })
 
