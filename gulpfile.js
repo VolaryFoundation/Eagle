@@ -5,7 +5,7 @@ gulp.task('warm-groups', function() {
   //require('./app/server')
   var db = require('mongo-promise')
   var config = require('config')
-  db.url = process.env.MONGOHQ_URL || config.servers.mongodb
+  db.url = process.env.MONGOLAB_URI || config.servers.mongodb
   var groups = require('./app/types/group/group_type')
   db.groups.find().then(function(caches) {
     groups.warmMany(caches.filter(groups.isOutdated))
@@ -18,7 +18,7 @@ gulp.task('build-groups', function() {
   var db = require('mongo-promise')
   var rsvp = require('rsvp')
   var config = require('config')
-  db.url = process.env.MONGOHQ_URL || config.servers.mongodb
+  db.url = process.env.MONGOLAB_URI || config.servers.mongodb
   var groupType = require('./app/types/group/group_type')
   db.shortcut('entities')
 
