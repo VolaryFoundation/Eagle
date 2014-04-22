@@ -53,7 +53,7 @@ module.exports = _.extend({}, base, {
   'aggregate-tags': function() {
     return new rsvp.Promise(function(res, rej) {
       db.groups.find().then(function(groups) {
-        var tags = _compact(_.uniq(_.flatten(groups, 'tags')))
+        var tags = _.compact(_.uniq(_.flatten(groups, 'tags')))
         res(tags)
       }, function(e) {
         res([]) 
