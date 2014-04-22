@@ -68,7 +68,7 @@ module.exports = {
 
     console.log('searching')
     return db[this.collection].find(query, fields, opts).then(function(results) {
-      _.filter(results, this.isOutdated).forEach(this.warm.bind(this))
+      //_.filter(results, this.isOutdated).forEach(this.warm.bind(this))
       return results
     }.bind(this))
   },
