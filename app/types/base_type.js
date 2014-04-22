@@ -11,6 +11,7 @@ module.exports = {
     var obj = arr[0]
     if (!obj) return
     console.log('and warming first ')
+    this.warm(obj)
     setTimeout(function() {
       console.log('delayed 2000 ms')
       this.warmMany(arr.slice(1))
