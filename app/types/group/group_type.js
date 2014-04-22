@@ -9,6 +9,7 @@ var adapters = {
 var base = require('../base_type')
 var db = require('mongo-promise')
 var _ = require('lodash')
+var rsvp = require('rsvp')
 
 db.getCollection('groups').then(function(coll) {
   coll.ensureIndex({ 'location.lng_lat': '2dsphere' }, function() {})
@@ -47,5 +48,16 @@ module.exports = _.extend({}, base, {
     }
 
     return query
+  },
+
+  'aggregate-tags': function() {
+    return new rsvp.Promise(function(res, rej) {
+      db.groups.find().then(function(groups) {
+        var tags = _compact(_.uniq(_.flatten(groups, 'tags')))
+        res(tags)
+      }, function(e) {
+        res([]) 
+      })
+    })
   }
 })

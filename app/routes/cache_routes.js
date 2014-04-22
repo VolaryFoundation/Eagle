@@ -1,6 +1,7 @@
 
 var db = require('mongo-promise')
 var types = require('../types/index')
+var redis = require('../lib/redis').connect()
 
 module.exports = function(app) {
 
@@ -13,6 +14,28 @@ module.exports = function(app) {
       res.send(results)
     }, function() {
       res.send(500) 
+    })
+  })
+
+  app.get('/cache/aggregation', function(req, res) {
+
+    console.log(req.query)
+    var type = types[req.query.type]
+    if (!type) return res.send(422)
+
+    var prop = 'aggregation-' + req.query.prop
+    redis.get(prop).then(function(val) {
+      if (val) {
+        res.send(JSON.parse(val))
+      } else {
+        type['aggregate-' + req.query.prop]().then(function(val) {
+          redis.set(prop, JSON.stringify(val)).then(function() {
+            res.send(val)
+          })
+        })
+      }
+    }, function(e) {
+      console.log('error in redis', e)
     })
   })
 

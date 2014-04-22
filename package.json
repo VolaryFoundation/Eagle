@@ -23,6 +23,7 @@
     "passport": "^0.2.0",
     "request": "^2.34.0",
     "rsvp": "^3.0.6",
+    "then-redis": "^0.3.12",
     "yaml": "^0.2.3"
   },
   "devDependencies": {
