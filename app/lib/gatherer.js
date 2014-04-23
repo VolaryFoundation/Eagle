@@ -14,7 +14,6 @@ var util = {
 
   buildForAdapter: function(adapter, raw) {
     return _.reduce(adapter.getters, function(memo, v, k) {
-      console.log(k, v, memo, raw)
       var val = v(raw)
       if (val != null) {
         memo[k] = val

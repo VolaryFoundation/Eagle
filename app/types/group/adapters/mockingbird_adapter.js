@@ -72,7 +72,7 @@ var mockingbirdAdapter = {
         if (!error && response.statusCode == 200) {
           res({
             meta: { source: 'mockingbird', expires: Math.round((Date.now() / 1000) + 172800) },
-            raw: body
+            raw: typeof body == 'string' ? JSON.parse(body) : body
           })
         } else {
           res(null)
