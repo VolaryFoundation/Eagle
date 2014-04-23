@@ -24,7 +24,8 @@ module.exports = {
     var gather = function(obj) {
       return gatherer.gather({
         refs: obj.refs,
-        adapters: this.adapters
+        adapters: this.adapters,
+        prefs: obj.prefs
       }).then(function(data) {
         data._entityId = obj._id.toString()
         data._refs = obj.refs

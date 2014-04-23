@@ -27,7 +27,7 @@ module.exports = {
 
   gather: function(config) {
 
-    var prefs = config.prefs || []
+    var prefs = config.prefs || {}
     var refs = config.refs
     var adapters = refs.map(function(ref) {
       var found = _.find(config.adapters, function(v, k) {
