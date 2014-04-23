@@ -59,6 +59,7 @@ module.exports = {
           }
 
           var pref = prefs[k]
+          console.log('checking pref', pref, prefs, k, adapters[i].name)
           if (pref && pref == adapters[i].name) {
             data[k] = v
             preferred = true
