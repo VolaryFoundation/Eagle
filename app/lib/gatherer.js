@@ -30,9 +30,11 @@ module.exports = {
     var prefs = config.prefs || []
     var refs = config.refs
     var adapters = refs.map(function(ref) {
-      return _.find(config.adapters, function(v, k) {
+      var foundAdapter = _.find(config.adapters, function(v, k) {
         return k == ref.adapter 
       })
+      foundAdapter.name = ref.adapter
+      return foundAdapter
     })
 
     // if there is an eronious ref in there (missing adapter)
