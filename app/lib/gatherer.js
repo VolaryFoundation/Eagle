@@ -46,24 +46,24 @@ module.exports = {
       return results.reduce(function(data, result, i) {
         if (!result || !result.raw) return data;
 
-        console.log('processing fetched', result)
         var built = util.buildForAdapter(adapters[i], result.raw)
         return _.reduce(built, function(data, v, k) {
           var preferred = false
 
-          console.log('checking for fields k', data._meta)
           if (!data._meta.fields[k]) data._meta.fields[k] = []
 
           if (typeof data[k] === 'undefined') {
             data[k] = v
           }
 
-          var pref = _.find(prefs, { prop: k })
-          if (pref && pref.adapter == adapters[i].name) {
+          var pref = prefs[k]
+          console.log('checking adapter ', adapters[i], pref)
+          if (pref && pref == adapters[i].name) {
             data[k] = v
             preferred = true
           }
 
+          console.log(k, v, preferred)
           data._meta.fields[k][ preferred ? 'unshift' : 'push' ]({
             expires: result.meta.expires,  
             source: result.meta.source,

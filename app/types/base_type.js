@@ -43,6 +43,7 @@ module.exports = {
 
     // if given a cache
     if (!obj.refs) {
+      console.log('given a cache', obj._entityId)
       return db.entities.findById(obj._entityId).then(function(cache) {
         console.log('findbyid', obj._entityId, cache) 
         gather(cache)
