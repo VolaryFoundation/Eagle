@@ -30,11 +30,11 @@ module.exports = {
     var prefs = config.prefs || []
     var refs = config.refs
     var adapters = refs.map(function(ref) {
-      var foundAdapter = _.find(config.adapters, function(v, k) {
+      var found = _.find(config.adapters, function(v, k) {
         return k == ref.adapter 
       })
-      foundAdapter.name = ref.adapter
-      return foundAdapter
+      found.name = ref.adapter
+      return found
     })
 
     // if there is an eronious ref in there (missing adapter)
@@ -59,13 +59,11 @@ module.exports = {
           }
 
           var pref = prefs[k]
-          console.log('checking adapter ', adapters[i], pref)
           if (pref && pref == adapters[i].name) {
             data[k] = v
             preferred = true
           }
 
-          console.log(k, v, preferred)
           data._meta.fields[k][ preferred ? 'unshift' : 'push' ]({
             expires: result.meta.expires,  
             source: result.meta.source,

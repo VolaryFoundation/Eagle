@@ -12,23 +12,24 @@ describe 'gatherer', ->
   describe 'prefs', ->
 
     it 'should add prefs as the first element in props array', (done) ->
-      adapter1 =
-        name: 'one',
-        getters: {
-          a: (obj) -> obj.a
+      adapters = {
+        one: {
+          getters: {
+            a: (obj) -> obj.a
+          },
+          fetch: -> passing({ meta: {}, raw: { a: 'foo' } })
         },
-        fetch: -> passing({ meta: {}, raw: { a: 'foo' } })
-      adapter2 =
-        name: 'two',
-        getters: {
-          a: (obj) -> obj.a
-        },
-        fetch: -> passing({ meta: {}, raw: { a: 'bar' } })
+        two: {
+          getters: {
+            a: (obj) -> obj.a
+          },
+          fetch: -> passing({ meta: {}, raw: { a: 'bar' } })
+        }
+      }
       gatherer.gather({
-        adapters: { one: adapter1, two: adapter2 },
+        adapters: adapters,
         prefs: { a: 'two' },
         refs: [ { adapter: 'one', id: 1 }, { adapter: 'two', id: 2 } ]
       }).then (data) ->
         expect(data.a).to.be('bar')
         done()
-
