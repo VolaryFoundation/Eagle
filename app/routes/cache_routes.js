@@ -19,7 +19,6 @@ module.exports = function(app) {
 
   app.get('/cache/aggregation', function(req, res) {
 
-    console.log(req.query)
     var type = types[req.query.type]
     if (!type) return res.send(422)
 
@@ -63,7 +62,6 @@ module.exports = function(app) {
     if (!type) return res.send(422)
 
     db.entities.findById(req.params.id).then(type.warm.bind(type))
-    console.log('deleting cache ', { _entityId: req.params.id })
     db[type.collection].remove({ _entityId: req.params.id }).then(function() {
       res.send(200)
     }, function() {

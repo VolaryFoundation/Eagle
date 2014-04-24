@@ -34,7 +34,7 @@ module.exports = function(app) {
 
   app.get('/entities/:id', function(req, res) {
     db.entities.findById(req.params.id).then(function(entity) {
-      res.send(entity)
+      entity ? res.send(entity) : res.send(404)
     }, function() {
       res.send(500)
     })
