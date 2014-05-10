@@ -31,6 +31,15 @@ module.exports = function(app) {
       res.send(500)
     })
   })
+  
+  //Requires adapterid query. Need to update this.
+  app.get('/entities/search', function(req, res) {
+    db.entities.findByAdapterId(req.query.adapterid).then(function(entity) {
+      entity ? res.send(entity) : res.send(404)
+    }, function() {
+      res.send(500)
+    })
+  })
 
   app.get('/entities/:id', function(req, res) {
     db.entities.findById(req.params.id).then(function(entity) {
